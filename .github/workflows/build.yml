@@ -38,12 +38,18 @@ jobs:
           npm i -g eas-cli@>=3.0.0
 
       - name: Configure Expo token (non-interactive)
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           mkdir -p ~/.expo
-          echo "$EXPO_TOKEN" > ~/.expo/token
+          echo "${{ secrets.EXPO_TOKEN }}" > ~/.expo/token
           echo "EXPO_TOKEN set"
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Export EAS_TOKEN to environment (no conditional - safe if empty)
+        run: |
+          echo "EAS_TOKEN=${{ secrets.EAS_TOKEN }}" >> $GITHUB_ENV
+          echo "EAS_TOKEN exported (may be empty)"
+        # no 'if' here to avoid parse errors
 
       - name: Validate expo project (optional, non-fatal)
         run: |
@@ -52,6 +58,17 @@ jobs:
       - name: Run EAS build (android apk) - non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
-          # 👇 YAHAN MAINE 'npx eas-cli' LAGA DIYA HAI TAAKI ERROR NA AAYE
-          npx eas-cli build --platform android --profile preview --non-interactive | tee eas-build.log
+          eas build --platform android --profile preview --non-interactive | tee eas-build.log
+          # Try to extract Expo/EAS build page URL (human-readable) and save
+          grep -Eo 'https://expo.dev/accounts[^ ]+' eas-build.log | head -n 1 > build-url.txt || echo "No build URL found in logs" > build-url.txt
+          echo "Build log saved and build-url.txt created"
+
+      - name: Upload build log and build-url
+        uses: actions/upload-artifact@v4
+        with:
+          name: eas-build-logs
+          path: |
+            eas-build.log
+            build-url.txt
