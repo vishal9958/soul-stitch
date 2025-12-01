@@ -4,22 +4,18 @@
     "slug": "soul-stitch",
     "version": "1.0.0",
     "orientation": "portrait",
-    
-    "icon": "./assets/images/icon.png", 
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    
     "splash": {
       "image": "./assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFDF5"
     },
-    
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.soulandstitch.app"
     },
-    
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
@@ -27,19 +23,23 @@
       },
       "package": "com.soulandstitch.app"
     },
-    
     "web": {
       "favicon": "./assets/images/logo.png",
       "bundler": "metro"
     },
-    
     "plugins": [
       "expo-router",
       "expo-font"
     ],
-    
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e3004e6e-dfa8-4653-b885-89e98bdd6be0"
+      }
+    },
+    "owner": "vishal00"
   }
 }
