@@ -7,27 +7,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Code Download
       - name: 🏗 Setup Repo
         uses: actions/checkout@v3
 
-      # 2. Node JS Install
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: npm
 
-      # 3. EAS CLI Install (Global) - Ye line error hatayegi
-      - name: 📦 Install EAS CLI
-        run: npm install -g eas-cli
-
-      # 4. Project Files Install
       - name: 📦 Install Dependencies
         run: npm install
 
-      # 5. Build Command (Direct Token Injection)
       - name: 🚀 Build APK
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        # 👇 YEH HAI JAADU: Humne 'npx' laga diya hai. Ye kabhi fail nahi hota.
         run: npx eas-cli build --platform android --profile preview --non-interactive
