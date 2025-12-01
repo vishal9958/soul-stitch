@@ -34,12 +34,12 @@
     "experiments": {
       "typedRoutes": true
     },
+    "owner": "vishal00",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e3004e6e-dfa8-4653-b885-89e98bdd6be0"
+        "projectId": "ded6bb71-4c98-4225-81f5-9249986794f2"
       }
-    },
-    "owner": "vishal00"
+    }
   }
 }
