@@ -1,26 +1,57 @@
-name: Build Android APK
+name: EAS Android build (APK)
 
 on:
+  push:
+    branches:
+      - main
+      - release/**
   workflow_dispatch:
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
+    env:
+      EXPO_CLI_NO_UPDATE_NOTIFIER: 1
+
     steps:
-      - name: 🏗 Setup Repo
-        uses: actions/checkout@v3
-
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          node-version: 18.x
-          cache: npm
+          fetch-depth: 0
 
-      - name: 📦 Install Dependencies
-        run: npm install
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-      - name: 🚀 Build APK
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies + eas-cli
+        run: |
+          npm ci
+          npm i -g eas-cli@>=3.0.0
+
+      - name: Configure Expo token (non-interactive)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        # 👇 YEH HAI JAADU: Humne 'npx' laga diya hai. Ye kabhi fail nahi hota.
-        run: npx eas-cli build --platform android --profile preview --non-interactive
+        run: |
+          mkdir -p ~/.expo
+          echo "$EXPO_TOKEN" > ~/.expo/token
+          echo "EXPO_TOKEN set"
+
+      - name: Validate expo project (optional, non-fatal)
+        run: |
+          npx expo config --type prebuild --platform android || true
+
+      - name: Run EAS build (android apk) - non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          # 👇 YAHAN MAINE 'npx eas-cli' LAGA DIYA HAI TAAKI ERROR NA AAYE
+          npx eas-cli build --platform android --profile preview --non-interactive | tee eas-build.log
