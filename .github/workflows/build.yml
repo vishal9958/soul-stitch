@@ -1,0 +1,31 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup Repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+
+      # 👇 STEP 1: EAS Tool ko zabardasti install karo (Taaki error na aaye)
+      - name: 📦 Install EAS CLI Global
+        run: npm install -g eas-cli
+
+      # 👇 STEP 2: Project ki files install karo
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      # 👇 STEP 3: Build Banao (Token environment se lega)
+      - name: 🚀 Build APK
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform android --profile preview --non-interactive
