@@ -1,30 +1,41 @@
-name: Build Android APK
+name: EAS Android build (APK)
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
+    env:
+      EXPO_CLI_NO_UPDATE_NOTIFIER: 1
+
     steps:
-      - name: 🏗 Setup Repo
-        uses: actions/checkout@v3
-
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          node-version: 18.x
-          cache: npm
+          fetch-depth: 0
 
-      - name: 🏗 Setup EAS
-        uses: expo/expo-github-action@v8
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.EXPO_TOKEN }}
+          node-version: '18'
+          cache: 'npm'
 
-      - name: 📦 Install EAS and Dependencies
+      # 👇 YAHAN HUM EAS CLI MANUALLY INSTALL KAR RAHE HAIN
+      - name: Install dependencies + eas-cli
         run: |
-          npm install -g eas-cli
-          npm install
+          npm ci
+          npm i -g eas-cli
 
-      - name: 🚀 Build APK
-        run: eas build --platform android --profile preview --non-interactive
+      # 👇 EXPO TOKEN KO SAHI TARAH SE SET KAR RAHE HAIN
+      - name: Configure Expo token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo "Setting up Expo Token..."
+          npx eas-cli login --token $EXPO_TOKEN
+
+      # 👇 FINALLY BUILD RUN KARNA
+      - name: Run EAS build
+        run: |
+          npx eas-cli build --platform android --profile preview --non-interactive
