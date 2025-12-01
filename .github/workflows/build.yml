@@ -1,41 +1,35 @@
-name: EAS Android build (APK)
+name: Build Android APK
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
-    env:
-      EXPO_CLI_NO_UPDATE_NOTIFIER: 1
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: 🏗 Setup Repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
+          node-version: 18.x
+          cache: npm
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
+      # 👇 STEP 1: HUM KHUD INSTALL KARENGE EAS
+      - name: 📦 Install EAS CLI
+        run: npm install -g eas-cli
 
-      # 👇 YAHAN HUM EAS CLI MANUALLY INSTALL KAR RAHE HAIN
-      - name: Install dependencies + eas-cli
-        run: |
-          npm ci
-          npm i -g eas-cli
+      # 👇 STEP 2: PROJECT DEPENDENCIES
+      - name: 📦 Install Dependencies
+        run: npm install
 
-      # 👇 EXPO TOKEN KO SAHI TARAH SE SET KAR RAHE HAIN
-      - name: Configure Expo token
+      # 👇 STEP 3: LOGIN KARENGE (Token se)
+      - name: 🔓 Login to Expo
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          echo "Setting up Expo Token..."
-          npx eas-cli login --token $EXPO_TOKEN
+        run: npx eas-cli login --token $EXPO_TOKEN
 
-      # 👇 FINALLY BUILD RUN KARNA
-      - name: Run EAS build
-        run: |
-          npx eas-cli build --platform android --profile preview --non-interactive
+      # 👇 STEP 4: BUILD BANAYENGE
+      - name: 🚀 Build APK
+        run: npx eas-cli build --platform android --profile preview --non-interactive
