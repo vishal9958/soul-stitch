@@ -7,25 +7,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1. Code Download
       - name: 🏗 Setup Repo
         uses: actions/checkout@v3
 
+      # 2. Node JS Install
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: npm
 
-      # 👇 STEP 1: EAS Tool ko zabardasti install karo (Taaki error na aaye)
-      - name: 📦 Install EAS CLI Global
+      # 3. EAS CLI Install (Global) - Ye line error hatayegi
+      - name: 📦 Install EAS CLI
         run: npm install -g eas-cli
 
-      # 👇 STEP 2: Project ki files install karo
+      # 4. Project Files Install
       - name: 📦 Install Dependencies
         run: npm install
 
-      # 👇 STEP 3: Build Banao (Token environment se lega)
+      # 5. Build Command (Direct Token Injection)
       - name: 🚀 Build APK
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform android --profile preview --non-interactive
+        run: npx eas-cli build --platform android --profile preview --non-interactive
