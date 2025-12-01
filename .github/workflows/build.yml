@@ -7,31 +7,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Code download karo
       - name: 🏗 Setup Repo
         uses: actions/checkout@v3
 
-      # 2. Node.js install karo
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: npm
 
-      # 3. YAHAN CHANGE HAI: Hum khud EAS install karenge (Plugin nahi use karenge)
-      - name: 📦 Install EAS CLI Manually
+      # 👇 STEP 1: EAS Tool ko zabardasti install karo (Taaki error na aaye)
+      - name: 📦 Install EAS CLI Global
         run: npm install -g eas-cli
 
-      # 4. Dependencies install karo
-      - name: 📦 Install Project Dependencies
+      # 👇 STEP 2: Project ki files install karo
+      - name: 📦 Install Dependencies
         run: npm install
 
-      # 5. Login karo (Secret Token se)
-      - name: 🔓 Login to Expo
+      # 👇 STEP 3: Build Banao (Token environment se lega)
+      - name: 🚀 Build APK
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx eas-cli login --token $EXPO_TOKEN
-
-      # 6. APK Banao
-      - name: 🚀 Build APK
-        run: npx eas-cli build --platform android --profile preview --non-interactive
+        run: eas build --platform android --profile preview --non-interactive
