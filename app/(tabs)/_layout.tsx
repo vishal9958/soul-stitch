@@ -131,7 +131,7 @@ export default function DrawerLayout() {
             drawerIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} />,
           }}
         />
-        <Drawer.Screen name="explore" options={{ drawerItemStyle: { display: 'none' } }} />
+        
       </Drawer>
     </GestureHandlerRootView>
   );
